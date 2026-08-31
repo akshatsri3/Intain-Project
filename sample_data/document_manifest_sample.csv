@@ -1,0 +1,16 @@
+loan_id,document_status,document_type,received_date,notes
+LN-1001,Complete,Mortgage Package,2022-04-01,All docs received
+LN-1002,Complete,Auto Loan Package,2023-02-15,Verified
+LN-1003,Pending,Personal Loan Package,2024-04-01,Missing income verification
+LN-1004,Complete,Mortgage Package,2021-07-10,All docs received
+LN-1005,Incomplete,Student Loan Package,2020-10-01,Enrollment letter missing
+LN-1006,Pending,Personal Loan Package,2024-01-01,Awaiting medical records
+LN-1007,Complete,Mortgage Package,2019-04-30,All docs received
+LN-1008,Incomplete,Auto Loan Package,2024-03-01,Title missing
+LN-1009,Complete,Business Loan Package,2022-02-01,All docs received
+LN-1010,Complete,Mortgage Package,2020-10-01,All docs received
+LN-1011,Missing,Personal Loan Package,,No documents received
+LN-1012,Complete,Auto Loan Package,2024-06-01,Verified
+LN-1013,Complete,Mortgage Package,2018-08-20,All docs received
+LN-1014,Incomplete,Student Loan Package,2021-09-10,Transcript pending
+LN-1015,Complete,Business Loan Package,2023-02-01,All docs received

@@ -1,0 +1,9 @@
+loan_id,current_balance,payment_status,days_past_due,last_payment_date,interest_rate,servicer_name
+LN-1001,$441500,Current,0,2026-08-15,6.25%,Acme Servicing
+LN-1002,$27800,Current,0,08/01/2026,7.50%,National Auto Svc
+LN-1003,$11200,60-89 Days Past Due,62,2026-05-10,11.50%,City Finance
+LN-1005,41900,Current,0,2026-07-30,4.99%,EduServ
+LN-1006,$6900,90+ Days Past Due,95,2026-03-01,12.5%,City Finance
+LN-1009,$175000,Current,0,2026-08-01,6.75%,BizLend
+LN-1015,"$505,000",Current,0,2026-08-01,7.25%,BizLend
+LN-1020,$317500,Current,0,2026-08-05,6.875%,West Coast Svc

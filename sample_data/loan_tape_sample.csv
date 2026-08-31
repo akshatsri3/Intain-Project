@@ -1,0 +1,26 @@
+Loan ID,Borrower ID,Loan Type,Origination Date,Maturity Date,Original Principal,Current Balance,Interest Rate,Term,State,Loan Purpose,Credit Grade,Employment Length,Income Band,Payment Status,Days Past Due,Servicer Name,Last Payment Date,Document Status,Source System
+LN-1001,BR-001,Mortgage,2022-03-15,2052-03-15,₹450000,₹442000,6.25%,360,MH,Home Purchase,A,5 years,High,Current,0,Acme Servicing,2026-08-01,Complete,LOS-1
+LN-1002,BR-002,Auto,01/20/2023,01/20/2028,"Rs. 32,500","Rs. 28,100",7.50%,60,DL,Vehicle,B,3 years,Medium,Current,0,National Auto Svc,2026-07-28,Complete,LOS-1
+LN-1003,BR-003,Personal,15-Mar-2024,15-Mar-2027,₹12000,₹11500,0.115,36,KA,Debt Consolidation,C,2 years,Low,30-59 Days Past Due,45,City Finance,2026-06-15,Pending,LOS-2
+LN-1004,BR-004,Mortgage,2021/06/01,2051/06/01,"₹6,20,000","₹6,08,000",3.875%,360,TN,Refinance,A+,10+ years,High,Current,0,Acme Servicing,2026-08-02,Complete,LOS-1
+LN-1005,BR-005,Student,Sep 1 2020,Sep 1 2030,45000,42300,4.99%,120,UP,Education,B+,N/A,Low,Current,0,EduServ,2026-07-30,,LOS-3
+LN-1006,BR-006,Personal,2023-11-10,2026-11-10,₹8500.00,₹7200.00,12.5%,36,GJ,Medical,D,1 year,Low,60-89 Days Past Due,75,City Finance,2026-05-01,Pending,LOS-2
+LN-1007,BR-007,Mortgage,03/22/2019,03/22/2049,"Rs. 8,75,000","Rs. 8,50,000",4.125%,360,MH,Home Purchase,A,7 years,High,Current,0,West Coast Svc,2026-08-01,Complete,LOS-1
+LN-1008,BR-008,Auto,2024-02-14,2027-02-14,18000,16500,8.99%,36,TS,Vehicle,C,4 years,Medium,Current,0,National Auto Svc,2026-08-03,,LOS-1
+LN-1009,BR-009,Business,January 5 2022,January 5 2025,"₹2,50,000","₹1,80,000",6.75%,36,RJ,Business Expansion,B,8 years,High,Current,0,BizLend,2026-07-25,Complete,LOS-4
+LN-1010,BR-010,Mortgage,2020-08-30,2050-08-30,"₹3,90,000","₹3,75,000",3.5%,360,WB,Refinance,A,6 years,Medium,Current,0,Mountain Svc,2026-08-01,Complete,LOS-1
+LN-1011,BR-011,Personal,12-Jun-2023,12-Jun-2025,₹6000.00,₹5100.00,0.18,24,KL,Personal Expenses,E,Less than 1 year,Low,90+ Days Past Due,102,City Finance,2026-03-01,Missing,LOS-2
+LN-1012,BR-012,Auto,2024/05/10,2029/05/10,"Rs. 45,000.00","Rs. 43,500.00",6.99%,60,HR,Vehicle,B,5 years,Medium,Current,0,National Auto Svc,2026-08-02,Complete,LOS-1
+LN-1013,BR-013,Mortgage,07/15/2018,07/15/2048,"₹12,00,000","₹11,55,000",4.5%,360,AP,Home Purchase,A+,15 years,High,Current,0,East Coast Svc,2026-08-01,Complete,LOS-1
+LN-1014,BR-014,Student,Aug 15 2021,Aug 15 2031,28000,26500,5.5%,120,PB,Education,B,N/A,Low,Current,0,EduServ,2026-07-29,,LOS-3
+LN-1015,BR-015,Business,2023-01-01,2025-01-01,"₹5,00,000","₹5,10,000",7.25%,24,MH,Working Capital,C+,3 years,Medium,Current,0,BizLend,2026-07-30,Complete,LOS-4
+LN-1016,BR-016,Personal,15-Jan-2024,15-Jan-2026,₹5000,₹4750,0.095,24,BR,Personal Expenses,B,2 years,Low,Current,0,City Finance,2026-08-01,Pending,LOS-2
+LN-1017,BR-017,Mortgage,11/30/2017,11/30/2047,"₹6,80,000","₹6,55,000",3.75%,360,JH,Home Purchase,A,12 years,High,Current,0,West Coast Svc,2026-08-01,Complete,LOS-1
+LN-1018,BR-018,Auto,2022-09-20,2025-09-20,"Rs. 22,000","Rs. 14,800",9.5%,36,GA,Vehicle,C,1 year,Low,Current,0,National Auto Svc,2026-07-20,Complete,LOS-1
+LN-1019,BR-019,Personal,Mar 5 2024,Mar 5 2027,₹15000,₹14200,11.99%,36,MP,Home Improvement,C,4 years,Medium,Current,0,City Finance,2026-08-01,,LOS-2
+LN-1020,BR-020,Mortgage,2023-07-01,2053-07-01,"₹3,20,000","₹3,18,000",6.875%,360,UK,Home Purchase,B+,2 years,Medium,Current,0,West Coast Svc,2026-08-03,Complete,LOS-1
+,BR-021,Personal,2024-01-15,2027-01-15,₹9000,₹8500,10%,36,MH,Travel,B,3 years,Medium,Current,0,City Finance,2026-08-01,Pending,LOS-2
+LN-1022,,Mortgage,INVALID-DATE,2050-01-01,"$BADVALUE","₹4,00,000",6%,360,DL,Home Purchase,A,5 years,High,Current,0,Acme Servicing,2026-08-01,Complete,LOS-1
+LN-1023,BR-023,Auto,2024-03-10,2027-03-10,₹19500,₹18900,7.75%,36,OD,Vehicle,B,6 years,Medium,Current,0,National Auto Svc,2026-08-02,Complete,LOS-1
+LN-1024,BR-024,Student,Sep 10 2019,Sep 10 2029,35000,31000,4.75%,120,CH,Education,A,N/A,Medium,Current,0,EduServ,2026-08-01,,LOS-3
+LN-1025,BR-025,Business,2024-06-01,2027-06-01,"₹1,00,000","₹99,000",8.5%,36,JK,Startup Capital,C,1 year,Low,Current,0,BizLend,2026-08-01,Pending,LOS-4
