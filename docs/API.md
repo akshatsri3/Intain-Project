@@ -49,7 +49,7 @@ Retrieve the current authenticated user identity and role.
 ```json
 {
   "id": 1,
-  "name": "Alice Operator",
+  "name": "Akshat Operator",
   "email": "operator@test.com",
   "role": "DATA_OPERATOR"
 }

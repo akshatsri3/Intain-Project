@@ -92,8 +92,8 @@ def test_submit_review_decision_accept(client, db):
 def test_submit_review_decision_reject_loan(client, db):
     """Reviewer rejecting a loan sets status to REJECTED."""
     reviewer = User(
-        name="Reviewer Alice",
-        email="rev_alice@test.com",
+        name="Reviewer Akshat",
+        email="rev_akshat@test.com",
         password_hash=hash_password("password123"),
         role=UserRole.REVIEWER,
     )

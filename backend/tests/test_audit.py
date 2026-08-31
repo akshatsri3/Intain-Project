@@ -13,7 +13,7 @@ from app.utils.security import hash_password, create_access_token
 def test_audit_trail_logging_and_querying(client, db):
     """Audit events logged during lifecycle can be retrieved via /audit endpoints."""
     operator = User(
-        name="Operator Alice",
+        name="Operator Akshat",
         email="audit_op@test.com",
         password_hash=hash_password("password123"),
         role=UserRole.DATA_OPERATOR,

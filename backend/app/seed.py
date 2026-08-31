@@ -35,7 +35,7 @@ def seed():
     try:
         demo_users = [
             {
-                "name": "Alice Operator",
+                "name": "Akshat Operator",
                 "email": "operator@test.com",
                 "password": "password123",
                 "role": UserRole.DATA_OPERATOR,
@@ -58,7 +58,11 @@ def seed():
         for user_data in demo_users:
             existing = db.query(User).filter(User.email == user_data["email"]).first()
             if existing:
-                logger.debug("  [SKIP] %s already exists", user_data["email"])
+                if existing.name != user_data["name"]:
+                    existing.name = user_data["name"]
+                    logger.info("  [UPDATE] %s -> %s", user_data["email"], user_data["name"])
+                else:
+                    logger.debug("  [SKIP] %s already exists", user_data["email"])
                 continue
 
             user = User(
