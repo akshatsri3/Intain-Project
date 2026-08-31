@@ -7,17 +7,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Configure logging so Vercel captures it
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ── Environment ──────────────────────────────────────────────────────────────
-FRONTEND_URL = os.getenv("FRONTEND_URL", "")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "").strip()
 
-# ── Database & models import (kept at module level so Vercel cold-starts fast) ──
+# ── Database & models import ──────────────────────────────────────────────────
 from app.database.connection import engine
 from app.database.base import Base
 
-# Import all models so SQLAlchemy can register their tables.
-# MUST happen before create_all().
+# Import all models so SQLAlchemy can register their tables (must be before create_all)
 import app.models  # noqa: F401
 
 # ── Routers ──────────────────────────────────────────────────────────────────
@@ -25,29 +26,30 @@ from app.api import health, auth, datasets
 from app.api import validation, reviews, verified, audit, loans
 
 
-# ── Lifespan ─────────────────────────────────────────────────────────────────
+# ── Lifespan ──────────────────────────────────────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     Runs once per cold-start.
-    Wrapped in try/except so a DB hiccup never prevents the API from starting.
+    Both create_all and seeding are wrapped in try/except so a DB issue
+    never prevents the API from responding to health checks.
     """
-    # Create tables if they don't exist yet (idempotent on PostgreSQL)
     try:
         Base.metadata.create_all(bind=engine)
-        logger.info("Database tables ensured.")
+        logger.info("✅ Database tables ensured.")
     except Exception as exc:
-        # Log the error but do NOT crash — the server should still start
-        logger.warning("Database table creation warning (non-fatal): %s", exc)
+        logger.error("❌ Database table creation FAILED: %s", exc)
 
-    # Seed demo users on fresh databases (idempotent — skips existing users)
     try:
         from app.seed import seed
         seed()
     except Exception as exc:
-        logger.warning("Demo user seeding warning (non-fatal): %s", exc)
+        logger.error("❌ Demo user seeding FAILED: %s", exc)
 
-    yield  # ← API is live from here until shutdown
+    # Log CORS config so it's visible in Vercel function logs
+    logger.info("🔒 CORS allowed origins: %s", allowed_origins)
+
+    yield
 
 
 # ── App ───────────────────────────────────────────────────────────────────────
@@ -59,24 +61,36 @@ app = FastAPI(
 )
 
 # ── CORS ──────────────────────────────────────────────────────────────────────
-# Build origin list — always include local dev, add production URL if set.
-origins = ["http://localhost:5173", "http://localhost:3000"]
+# Build the allowed origins list.
+# Always include local dev. Append the production frontend URL if configured.
+allowed_origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+]
 if FRONTEND_URL:
-    origins.append(FRONTEND_URL)
+    allowed_origins.append(FRONTEND_URL)
+    # Also add with and without trailing slash to be safe
+    if FRONTEND_URL.endswith("/"):
+        allowed_origins.append(FRONTEND_URL.rstrip("/"))
+    else:
+        allowed_origins.append(FRONTEND_URL + "/")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 
-# ── Root endpoint (no auth, no DB — confirms server is up) ────────────────────
+# ── Root (no auth, no DB) ─────────────────────────────────────────────────────
 @app.get("/", tags=["root"])
 def root():
-    return {"message": "Loan Data Verification Copilot API is running", "version": "2.0.0"}
+    return {
+        "message": "Loan Data Verification Copilot API is running",
+        "version": "2.0.0",
+    }
 
 
 # ── Routers ───────────────────────────────────────────────────────────────────

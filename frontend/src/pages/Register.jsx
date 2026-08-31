@@ -84,8 +84,35 @@ export default function Register() {
 			// Redirect to login after a short delay so the user can read the success message
 			setTimeout(() => navigate('/login'), 2000);
 		} catch (err) {
-			// Show the backend error message if available
-			setError(err.response?.data?.detail || 'Registration failed. Please try again.');
+			// Log the full error to the browser console for debugging
+			console.error('Registration error:', err);
+
+			// Extract the most useful error message in priority order:
+			// 1. Backend validation message  (e.g. "Email already registered")
+			// 2. Backend generic detail
+			// 3. Network-level message       (e.g. CORS, connection refused)
+			// 4. Generic fallback
+			const backendDetail = err.response?.data?.detail;
+			const networkMsg = err.message;
+
+			let displayError;
+			if (backendDetail) {
+				// Could be a string or a Pydantic validation array
+				if (typeof backendDetail === 'string') {
+					displayError = backendDetail;
+				} else if (Array.isArray(backendDetail)) {
+					displayError = backendDetail.map((e) => e.msg).join(', ');
+				} else {
+					displayError = JSON.stringify(backendDetail);
+				}
+			} else if (networkMsg === 'Network Error') {
+				displayError =
+					'Cannot reach the server. This is usually a CORS or connectivity issue — check that VITE_API_URL is set correctly and that the backend FRONTEND_URL env var includes this site.';
+			} else {
+				displayError = networkMsg || 'Registration failed. Please try again.';
+			}
+
+			setError(displayError);
 		} finally {
 			setLoading(false);
 		}

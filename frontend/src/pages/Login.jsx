@@ -48,7 +48,17 @@ export default function Login() {
 			await login(email, password);
 			navigate('/dashboard');
 		} catch (err) {
-			setError(err.response?.data?.detail || 'Invalid email or password');
+			console.error('Login error:', err);
+			const backendDetail = err.response?.data?.detail;
+			if (backendDetail) {
+				setError(typeof backendDetail === 'string' ? backendDetail : JSON.stringify(backendDetail));
+			} else if (err.message === 'Network Error') {
+				setError(
+					'Cannot reach the server. Check that VITE_API_URL is correct and that CORS is configured on the backend.',
+				);
+			} else {
+				setError(err.message || 'Invalid email or password');
+			}
 		} finally {
 			setLoading(false);
 		}
