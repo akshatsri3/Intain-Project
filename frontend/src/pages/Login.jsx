@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
 	ShieldCheck,
@@ -206,6 +206,17 @@ export default function Login() {
 						>
 							{loading ? 'Signing in...' : 'Sign In'}
 						</button>
+
+						{/* Link to registration page */}
+						<p className="text-center text-sm text-zinc-500">
+							Don&apos;t have an account?{' '}
+							<Link
+								to="/register"
+								className="font-medium text-zinc-300 underline-offset-4 transition-colors hover:text-white hover:underline"
+							>
+								Create one
+							</Link>
+						</p>
 					</form>
 
 					{/* Demo Credentials Helper */}

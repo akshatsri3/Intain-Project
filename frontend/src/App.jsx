@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './layouts/MainLayout';
 
 import Login from './pages/Login';
+import Register from './pages/Register';
 import OperatorDashboard from './pages/OperatorDashboard';
 import ReviewerDashboard from './pages/ReviewerDashboard';
 import ConsumerDashboard from './pages/ConsumerDashboard';
@@ -33,6 +34,7 @@ export default function App() {
 				<Routes>
 					{/* Public */}
 					<Route path="/login" element={<Login />} />
+					<Route path="/register" element={<Register />} />
 					<Route
 						path="/"
 						element={<Navigate to="/dashboard" replace />}
