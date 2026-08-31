@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from app.models.dataset import Dataset, DatasetStatus
 from app.models.raw_record import RawRecord
 from app.models.loan import Loan
-from app.models.import_error import ImportError
+from app.models.import_error import ImportError as ImportErrorModel
 from app.utils.normalization import normalize_row, NormalizationCounters
 
 
@@ -71,7 +71,7 @@ def process_csv(
             successfully_imported += 1
 
         except Exception as e:
-            import_error = ImportError(
+            import_error = ImportErrorModel(
                 dataset_id=dataset.id,
                 row_number=row_number,
                 error_type="NORMALIZATION_ERROR",

@@ -1,7 +1,14 @@
 import axios from 'axios';
 
+// Support both VITE_API_URL (preferred) and VITE_API_BASE_URL (legacy).
+// Falls back to localhost for local development.
+const API_BASE_URL =
+	import.meta.env.VITE_API_URL ||
+	import.meta.env.VITE_API_BASE_URL ||
+	'http://localhost:8000';
+
 const api = axios.create({
-	baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000',
+	baseURL: API_BASE_URL,
 	headers: { 'Content-Type': 'application/json' },
 });
 

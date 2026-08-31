@@ -6,7 +6,7 @@ from app.database.connection import get_db
 from app.models.user import User, UserRole
 from app.models.dataset import Dataset, SourceType, DatasetStatus
 from app.models.loan import Loan
-from app.models.import_error import ImportError
+from app.models.import_error import ImportError as ImportErrorModel
 from app.schemas.dataset import DatasetResponse, ImportSummaryResponse, NormalizationSummary, ImportErrorResponse
 from app.schemas.loan import LoanResponse
 from app.services.ingestion_service import process_csv
@@ -129,9 +129,9 @@ def get_dataset_errors(
         raise HTTPException(status_code=403, detail="Access denied")
 
     errors = (
-        db.query(ImportError)
-        .filter(ImportError.dataset_id == dataset_id)
-        .order_by(ImportError.row_number)
+        db.query(ImportErrorModel)
+        .filter(ImportErrorModel.dataset_id == dataset_id)
+        .order_by(ImportErrorModel.row_number)
         .all()
     )
     return errors

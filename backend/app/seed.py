@@ -1,31 +1,39 @@
 """
-Seed script — inserts three test users into the database.
+Seed script — inserts three demo users into the database.
 
-Run with:
+Called automatically from app lifespan on startup (idempotent).
+Can also be run manually:
   cd backend
   python -m app.seed
 """
 
 import sys
 import os
+import logging
 
-# Ensure the backend directory is on the path when running directly
+logger = logging.getLogger(__name__)
+
+# Allow running directly: python -m app.seed
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.database.connection import SessionLocal, engine
 from app.database.base import Base
-import app.models  # noqa: F401 — ensures models are registered
+import app.models  # noqa: F401 — registers all ORM models
 from app.models.user import User, UserRole
 from app.utils.security import hash_password
 
 
 def seed():
-    # Create tables if they don't exist
+    """
+    Create demo users if they don't already exist.
+    Safe to call multiple times — never duplicates users.
+    """
+    # Ensure tables exist (no-op if already created)
     Base.metadata.create_all(bind=engine)
 
     db = SessionLocal()
     try:
-        test_users = [
+        demo_users = [
             {
                 "name": "Alice Operator",
                 "email": "operator@test.com",
@@ -46,10 +54,11 @@ def seed():
             },
         ]
 
-        for user_data in test_users:
+        created = 0
+        for user_data in demo_users:
             existing = db.query(User).filter(User.email == user_data["email"]).first()
             if existing:
-                print(f"  [SKIP] {user_data['email']} already exists")
+                logger.debug("  [SKIP] %s already exists", user_data["email"])
                 continue
 
             user = User(
@@ -59,15 +68,19 @@ def seed():
                 role=user_data["role"],
             )
             db.add(user)
-            print(f"  [CREATE] {user_data['email']} ({user_data['role'].value})")
+            created += 1
+            logger.info("  [CREATE] %s (%s)", user_data["email"], user_data["role"].value)
 
         db.commit()
-        print("\nSeed completed successfully.")
+        if created:
+            logger.info("Seeded %d demo user(s).", created)
 
     finally:
         db.close()
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     print("Seeding database...")
     seed()
+    print("Seed completed.")
