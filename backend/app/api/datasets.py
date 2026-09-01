@@ -1,3 +1,5 @@
+import traceback
+import logging
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Form, status
 from sqlalchemy.orm import Session
@@ -11,6 +13,8 @@ from app.schemas.dataset import DatasetResponse, ImportSummaryResponse, Normaliz
 from app.schemas.loan import LoanResponse
 from app.services.ingestion_service import process_csv
 from app.utils.security import get_current_user
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/datasets", tags=["datasets"])
 
@@ -31,7 +35,12 @@ async def upload_dataset(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_operator),
 ):
-    if not file.filename.endswith(".csv"):
+    logger.info(
+        "DATASET UPLOAD START: user=%s file=%s source_type=%s",
+        current_user.id, file.filename, source_type,
+    )
+
+    if not file.filename or not file.filename.endswith(".csv"):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Only CSV files are supported",
@@ -45,8 +54,17 @@ async def upload_dataset(
             detail=f"Invalid source_type. Must be one of: {[e.value for e in SourceType]}",
         )
 
-    file_content = await file.read()
+    try:
+        file_content = await file.read()
+    except Exception as e:
+        logger.error("DATASET UPLOAD: failed to read uploaded file: %s", repr(e))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Could not read uploaded file: {str(e)}",
+        )
+
     file_size = len(file_content)
+    logger.info("DATASET UPLOAD: file_size=%d bytes", file_size)
 
     dataset = Dataset(
         file_name=file.filename,
@@ -56,15 +74,51 @@ async def upload_dataset(
         status=DatasetStatus.UPLOADED,
     )
     db.add(dataset)
-    db.commit()
-    db.refresh(dataset)
+    try:
+        db.commit()
+        db.refresh(dataset)
+    except Exception as e:
+        db.rollback()
+        logger.error("DATASET UPLOAD: DB error creating dataset record: %s", repr(e))
+        traceback.print_exc()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Database error creating dataset: {str(e)}",
+        )
+
+    logger.info("DATASET UPLOAD: dataset record created id=%s", dataset.id)
 
     try:
         counters = process_csv(db, dataset, file_content)
     except ValueError as e:
+        logger.warning("DATASET UPLOAD: validation error in process_csv: %s", str(e))
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(e))
+    except Exception as e:
+        logger.error("DATASET UPLOAD ERROR in process_csv: %s", repr(e))
+        traceback.print_exc()
+        # Roll back to a clean state
+        try:
+            db.rollback()
+            dataset.status = DatasetStatus.FAILED
+            db.add(dataset)
+            db.commit()
+        except Exception:
+            pass
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Upload processing failed: {str(e)}",
+        )
 
-    db.refresh(dataset)
+    try:
+        db.refresh(dataset)
+    except Exception:
+        pass
+
+    logger.info(
+        "DATASET UPLOAD COMPLETE: dataset_id=%s total=%s imported=%s failed=%s",
+        dataset.id, dataset.total_rows,
+        dataset.successfully_imported_rows, dataset.failed_rows,
+    )
 
     return ImportSummaryResponse(
         dataset=DatasetResponse.model_validate(dataset),

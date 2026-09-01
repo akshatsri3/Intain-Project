@@ -5,8 +5,12 @@ export const datasetService = {
 		const formData = new FormData();
 		formData.append('file', file);
 		formData.append('source_type', sourceType);
+		// Do NOT manually set Content-Type here.
+		// When posting FormData, Axios must let the browser auto-generate
+		// the 'multipart/form-data; boundary=...' header including the boundary.
+		// Manually setting it strips the boundary and causes FastAPI to return 500.
 		const response = await api.post('/datasets/upload', formData, {
-			headers: { 'Content-Type': 'multipart/form-data' },
+			headers: { 'Content-Type': undefined },
 		});
 		return response.data; // ImportSummaryResponse
 	},

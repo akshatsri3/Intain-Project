@@ -1,5 +1,7 @@
 import io
 import math
+import logging
+import traceback
 import pandas as pd
 from sqlalchemy.orm import Session
 
@@ -8,6 +10,8 @@ from app.models.raw_record import RawRecord
 from app.models.loan import Loan
 from app.models.import_error import ImportError as ImportErrorModel
 from app.utils.normalization import normalize_row, NormalizationCounters
+
+logger = logging.getLogger(__name__)
 
 
 def _safe_value(val) -> any:
@@ -36,6 +40,8 @@ def process_csv(
     try:
         df = pd.read_csv(io.BytesIO(file_content), dtype=str, keep_default_na=False)
     except Exception as e:
+        logger.error("process_csv: could not parse CSV for dataset %s: %s", dataset.id, repr(e))
+        traceback.print_exc()
         dataset.status = DatasetStatus.FAILED
         dataset.total_rows = 0
         db.commit()
@@ -43,7 +49,10 @@ def process_csv(
 
     total_rows = len(df)
     dataset.total_rows = total_rows
+    logger.info("process_csv: dataset_id=%s total_rows=%d", dataset.id, total_rows)
     db.commit()
+
+    imported_loan_ids = []  # track IDs for audit logging
 
     for idx, row in df.iterrows():
         row_number = idx + 1
@@ -68,9 +77,15 @@ def process_csv(
                 **normalized,
             )
             db.add(loan)
+            db.flush()  # flush so loan.id is available
+            imported_loan_ids.append((loan.id, row_number))
             successfully_imported += 1
 
         except Exception as e:
+            logger.warning(
+                "process_csv: normalization error at row %d dataset %s: %s",
+                row_number, dataset.id, str(e),
+            )
             import_error = ImportErrorModel(
                 dataset_id=dataset.id,
                 row_number=row_number,
@@ -91,18 +106,30 @@ def process_csv(
     dataset.status = DatasetStatus.COMPLETED
     db.commit()
 
+    logger.info(
+        "process_csv: dataset_id=%s imported=%d failed=%d",
+        dataset.id, successfully_imported, failed_rows,
+    )
+
+    # Audit logging — log dataset upload event and each imported loan
     from app.services.audit_service import log_event
     log_event(db, "dataset", dataset.id, "UPLOADED",
               details={"file_name": dataset.file_name, "file_size": dataset.file_size})
-    for loan_record in db.query(Loan).filter(Loan.dataset_id == dataset.id).all():
-        log_event(db, "loan", loan_record.id, "IMPORTED",
-                  details={"dataset_id": dataset.id, "row_number": loan_record.source_row_number})
+
+    # Log each imported loan using in-memory IDs (avoid N+1 query)
+    for loan_id, row_number in imported_loan_ids:
+        log_event(db, "loan", loan_id, "IMPORTED",
+                  details={"dataset_id": dataset.id, "row_number": row_number})
     db.commit()
 
     from app.services.validation_service import validate_dataset
     try:
         validate_dataset(db, dataset.id)
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.error(
+            "process_csv: validation failed for dataset %s: %s", dataset.id, repr(exc)
+        )
+        traceback.print_exc()
+        # Validation failure is non-fatal — dataset is still imported
 
     return counters

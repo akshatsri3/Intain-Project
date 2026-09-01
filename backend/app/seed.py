@@ -41,7 +41,7 @@ def seed():
                 "role": UserRole.DATA_OPERATOR,
             },
             {
-                "name": "Bob Reviewer",
+                "name": "Akshat Reviewer",
                 "email": "reviewer@test.com",
                 "password": "password123",
                 "role": UserRole.REVIEWER,

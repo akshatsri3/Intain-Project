@@ -137,7 +137,6 @@ COLUMN_NAME_MAP: dict[str, str] = {
 
 def normalize_column_name(raw_name: str) -> Optional[str]:
     """Map a raw CSV column name to the internal field name, or None if unknown."""
-def normalize_column_name(raw_name: str) -> Optional[str]:
     return COLUMN_NAME_MAP.get(raw_name.strip().lower())
 
 

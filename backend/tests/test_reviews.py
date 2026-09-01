@@ -16,7 +16,7 @@ def test_submit_review_decision_accept(client, db):
     """Reviewer accepting an AI suggestion resolves the exception and verifies clean loans."""
     # Setup reviewer
     reviewer = User(
-        name="Reviewer Bob",
+        name="Reviewer Akshat",
         email="rev_test@test.com",
         password_hash=hash_password("password123"),
         role=UserRole.REVIEWER,
