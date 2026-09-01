@@ -78,8 +78,7 @@ python -m app.seed
 uvicorn app.main:app --reload
 ```
 
-* API available at: **http://localhost:8000**
-* Interactive Swagger Docs: **http://localhost:8000/docs**
+
 
 ### 3. Set Up and Run the Frontend
 
@@ -93,7 +92,7 @@ npm install
 npm run dev
 ```
 
-* Frontend available at: **http://localhost:5173**
+* Frontend available at: intain-project-vert.vercel.app
 
 ---
 
